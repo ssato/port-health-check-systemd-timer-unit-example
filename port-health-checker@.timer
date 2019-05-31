@@ -1,0 +1,9 @@
+[Unit]
+Description=Check if given network port is open and healthy periodically
+
+[Timer]
+OnCalendar=hourly
+AccuracySec=24h
+
+[Install]
+WantedBy=timers.target
