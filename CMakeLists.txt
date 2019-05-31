@@ -1,17 +1,18 @@
-project(port-health-checker)
-cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
+project(port-health-checker NONE)
+cmake_minimum_required(VERSION 2.8)
 
-set(PORT_HEALTH_CHECKER_VERSION "0.0.1")
+set(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+set(CPACK_PACKAGE_VERSION "0.0.1")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}-${CPACK_PACKAGE_VERSION}")
+set(CPACK_SOURCE_IGNORE_FILES "/build/;/.git/;~$;${CPACK_SOURCE_IGNORE_FILES}")
+set(CPACK_SOURCE_GENERATOR "TXZ")
+include(CPack)
+add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
-configure_file(${CMAKE_SOURCE_DIR}/src/port-health-checker-generator.sh.in
-               ${PROJECT_BINARY_DIR}/port-health-checker-generator.sh @ONLY)
+configure_file(${CMAKE_SOURCE_DIR}/package.spec.in ${PROJECT_BINARY_DIR}/package.spec @ONLY)
 
-set(SYSTEMD_SYSTEM_DIR lib/systemd)
-file(GLOB SYSTEMD_UNITS "${CMAKE_SOURCE_DIR}/src/*@.*")
+include(GNUInstallDirs)
 
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/conf DESTINATION etc/${CMAKE_PROJECT_NAME}.d/
-        FILES_MATCHING PATTERN "*.conf")
-install(FILES ${SYSTEMD_UNITS} DESTINATION ${SYSTEMD_SYSTEM_DIR}/system)
-install(FILES ${CMAKE_SOURCE_DIR}/doc/port-health-checker.man DESTINATION share/man/man1)
-install(PROGRAMS ${PROJECT_BINARY_DIR}/port-health-checker-generator.sh
-        DESTINATION ${SYSTEMD_SYSTEM_DIR}/system-generators/)
+add_subdirectory(doc)
+add_subdirectory(src)
+add_subdirectory(conf)
