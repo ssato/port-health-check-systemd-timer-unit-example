@@ -1,12 +1,16 @@
 Summary: A systemd timer unit example of port checker
-Name:    port-health-checker
-Version: 0.0.1
+Name:    @CPACK_PACKAGE_NAME@
+Version: @CPACK_PACKAGE_VERSION@
 Release: 1%{?dist}
 License: MIT
-URL: https://github.com/ssato/port-health-check-systemd-timer-unit-example
+URL: https://github.com/ssato/port-health-checker
 Source0: %{url}/archive/RELEASE_%{version}.tar.gz
 %{?systemd_requires}
+BuildRequires: gcc
+BuildRequires: gcc-c++
+BuildRequires: cmake
 BuildRequires: systemd
+Requires: nmap-ncat
 
 %description
 A RPM package provides an example of systemd timer unit to check health of
@@ -36,7 +40,7 @@ given local port periodically.
 %doc README.rst
 %license LICENSE.MIT
 %{_unitdir}/*@.*
-%config /etc/port-health-checker.d/*.conf
+%config /etc/*.d/*.conf
 %{_mandir}/man*/*
 
 %changelog
