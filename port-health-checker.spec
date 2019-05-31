@@ -1,5 +1,5 @@
 Summary: A systemd timer unit example of port checker
-Name:    port-check-systemd-timer-unit-example
+Name:    port-health-checker
 Version: 0.0.1
 Release: 1%{?dist}
 License: MIT
@@ -16,30 +16,29 @@ given local port periodically.
 %autosetup -n %{name}-%{version}
 
 %build
-%configure
-make
+%cmake .
+%make_build
 
 %install
-make install DESTDIR=%{buildroot}
+%make_install
 
 %post
-%systemd_post port-check.timer
-systemctl start port-check.timer
+#%systemd_post port-health-checker@.timer
+#systemctl start port-health-checker@.timer
 
 %preun
-%systemd_preun port-check.timer
+#%systemd_preun port-health-checker@.timer
 
 %postun
-%systemd_postun_with_restart port-check.timer
+#%systemd_postun_with_restart port-health-checker@.timer
 
 %files
 %doc README.rst
 %license LICENSE.MIT
-%{_unitdir}/*.service
-%{_unitdir}/*.timer
+%{_unitdir}/*@.*
 %config /etc/port-health-checker.d/*.conf
 %{_mandir}/man*/*
 
 %changelog
-* Tue May 28 2019 Satoru SATOH <ssato@redhat.com> - 0.0.1-1
+* Fri May 31 2019 Satoru SATOH <ssato@redhat.com> - 0.0.1-1
 - Initial build.
