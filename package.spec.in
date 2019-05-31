@@ -1,4 +1,7 @@
 %global debug_package %{nil}
+%if 0%{?rhel} == 7 || 0%{?epel} == 7
+%define _systemdgeneratordir /usr/lib/systemd/system-generators
+%endif
 
 Summary: A systemd timer unit example of port checker
 Name:    @CPACK_PACKAGE_NAME@
