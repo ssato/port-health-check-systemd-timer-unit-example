@@ -1,3 +1,5 @@
+%global debug_package %{nil}
+
 Summary: A systemd timer unit example of port checker
 Name:    @CPACK_PACKAGE_NAME@
 Version: @CPACK_PACKAGE_VERSION@
@@ -10,6 +12,7 @@ BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: cmake
 BuildRequires: systemd
+BuildArch:     noarch
 Requires: nmap-ncat
 
 %description
@@ -26,6 +29,9 @@ given local port periodically.
 %install
 %make_install
 
+# FIXME:
+(cd %{buildroot}/ && mv usr/etc/ ./)
+
 %post
 #%systemd_post port-health-checker@.timer
 #systemctl start port-health-checker@.timer
@@ -40,7 +46,9 @@ given local port periodically.
 %doc README.rst
 %license LICENSE.MIT
 %{_unitdir}/*@.*
-%config /etc/*.d/*.conf
+%{_systemdgeneratordir}/*
+/usr/lib/systemd/system-generators/port-health-checker-generator.sh
+%config /etc/%{name}/*.conf
 %{_mandir}/man*/*
 
 %changelog
