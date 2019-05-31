@@ -6,7 +6,7 @@
 unitdir=/usr/lib/systemd/system
 
 pkgname=@CMAKE_PROJECT_NAME@
-pkgconfdir=/etc/${pkgname}.d
+pkgconfdir=/etc/${pkgname}
 normal_dir=${1:-/tmp}
 
 
