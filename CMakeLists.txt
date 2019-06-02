@@ -9,10 +9,9 @@ set(CPACK_SOURCE_GENERATOR "TXZ")
 include(CPack)
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
-configure_file(${CMAKE_SOURCE_DIR}/package.spec.in ${PROJECT_BINARY_DIR}/package.spec @ONLY)
-
 include(GNUInstallDirs)
 
 add_subdirectory(doc)
 add_subdirectory(src)
+add_subdirectory(pkg)
 add_subdirectory(conf)
