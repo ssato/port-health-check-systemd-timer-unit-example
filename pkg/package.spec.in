@@ -18,11 +18,21 @@ BuildRequires: gcc-c++
 BuildRequires: cmake
 BuildRequires: systemd
 BuildArch:     noarch
-Requires: nmap-ncat
+Requires:      nmap-ncat
+Requires:      systemd
+
+%package       80-nginx
+Summary:       A systemd timer unit to monitor HTTP port by nginx
+Requires:      nginx
+Requires:      %{name} = %{version}-%{release}
 
 %description
 A RPM package provides an example of systemd timer unit to check health of
 given local port periodically.
+
+%description   80-nginx
+This package provides configuration to monitor HTTP (80/tcp) port listen by
+nginx running on localhost.
 
 %prep
 %autosetup -n %{name}-%{version}
@@ -52,9 +62,13 @@ given local port periodically.
 %license LICENSE.MIT
 %{_unitdir}/*@.*
 %{_systemdgeneratordir}/*
-/usr/lib/systemd/system-generators/port-health-checker-generator.sh
-%config /etc/%{name}/*.conf
+%config /etc/%{name}/00_example.conf
 %{_mandir}/man*/*
+
+%files         80-nginx
+%doc README.rst
+%license LICENSE.MIT
+%config /etc/%{name}/20_http_nginx.conf
 
 %changelog
 * Fri May 31 2019 Satoru SATOH <ssato@redhat.com> - 0.0.1-1
