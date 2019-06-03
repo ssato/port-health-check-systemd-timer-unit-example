@@ -1,5 +1,5 @@
 [Unit]
-Description=Check if given network port is open and healthy periodically
+Description=Port health chekcer
 
 [Timer]
 OnCalendar=hourly
