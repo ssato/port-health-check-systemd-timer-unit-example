@@ -1,0 +1,33 @@
+#! /usr/bin/bats
+#
+#
+function setup_workdir () {
+    export TESTS_OUT_DIR=$(mktemp --directory)
+}
+
+function prune_workdir () {
+    test -d ${TESTS_OUT_DIR:?} && [[ ${TESTS_OUT_DIR} != "/" ]] && rm -rf ${TESTS_OUT_DIR}
+}
+
+function setup () {
+    setup_workdir
+}
+
+function teardown () {
+    prune_workdir
+}
+
+@test "generate units w/ using port-health-checker-generator.sh" {
+    local systemd_dir=@SYSTEMD_DIR@
+    local outdir=${TESTS_OUT_DIR}/generator
+
+    run ${system_dir}//system-generators/port-health-checker-generator.sh ${outdir}{,.early,.late}
+    [[ ${status} -eq 0 ]]
+
+    [[ -d ${outdir}/timers.target.wants ]]
+    [[ -d ${outdir}/port-health-checker@80.service.d ]]
+    [[ -L ${outdir}/port-health-checker@80.service ]]
+    [[ -L ${outdir}/timers.target.wants/port-health-checker@80.service ]]
+}
+
+# vim:sw=4:ts=4:et:
