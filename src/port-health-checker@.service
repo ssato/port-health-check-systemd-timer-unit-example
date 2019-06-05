@@ -1,7 +1,7 @@
 [Unit]
 Description=Check connectivity to the network port %i
 Documentation=man:nc(1) man:port-health-checker-generator(1)
-SourcePath=/etc/port-health-checker/%i.conF
+SourcePath=/etc/port-health-checker/%i.conf
 
 [Service]
 Type=oneshot
