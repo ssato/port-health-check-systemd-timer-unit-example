@@ -68,7 +68,7 @@ nginx running on localhost.
 %files         80-nginx
 %doc README.rst
 %license LICENSE.MIT
-%config /etc/%{name}/20_http_nginx.conf
+%config /etc/%{name}/80.conf
 
 %changelog
 * Fri May 31 2019 Satoru SATOH <ssato@redhat.com> - 0.0.1-1
