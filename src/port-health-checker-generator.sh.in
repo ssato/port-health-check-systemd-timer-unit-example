@@ -6,7 +6,7 @@
 unitdir=/usr/lib/systemd/system
 
 pkgname=@CMAKE_PROJECT_NAME@
-pkgconfdir=/etc/${pkgname}
+pkgconfdir=${_PHC_PKG_CONF_DIR:-/etc/${pkgname}}
 normal_dir=${1:-/tmp}  # /run/systemd/generator by default.
 
 
