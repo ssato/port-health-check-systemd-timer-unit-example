@@ -17,17 +17,20 @@ function teardown () {
     prune_workdir
 }
 
-@test "generate units w/ using port-health-checker-generator.sh" {
-    local systemd_dir=@SYSTEMD_DIR@
-    local outdir=${TESTS_OUT_DIR}/generator
+@test "generate units w/ using a generator script" {
+    local unitdir=@PROJECT_BINARY_DIR@/../src
+    local confdir=@PROJECT_BINARY_DIR@/../conf
+    local outdir=${TESTS_OUT_DIR}
 
-    run ${system_dir}//system-generators/port-health-checker-generator.sh ${outdir}{,.early,.late}
+    run ${unitdir}/port-health-checker-units-generator.sh \
+        -o ${outdir}/ -s ${unitdir}/port-health-checker-.service.in \
+        ${confdir}/nginx_80_127.0.0.1.conf
+
     [[ ${status} -eq 0 ]]
 
-    [[ -d ${outdir}/timers.target.wants ]]
-    [[ -d ${outdir}/port-health-checker@80.service.d ]]
-    [[ -L ${outdir}/port-health-checker@80.service ]]
-    [[ -L ${outdir}/timers.target.wants/port-health-checker@80.service ]]
+    [[ -d ${outdir} ]]
+    [[ -f ${outdir}/port-health-checker-127.0.0.1@80.service ]]
+    [[ -f ${outdir}/port-health-checker-127.0.0.1@80.timer ]]
 }
 
 # vim:sw=4:ts=4:et:
