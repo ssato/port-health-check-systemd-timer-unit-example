@@ -3,6 +3,7 @@ Description=Port health chekcer
 
 [Timer]
 OnCalendar=hourly
+Persistent=true
 AccuracySec=24h
 
 [Install]
