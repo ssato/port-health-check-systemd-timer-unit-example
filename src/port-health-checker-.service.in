@@ -1,7 +1,7 @@
 [Unit]
 Description=Check connectivity to the network port @PORT@ on @ADDR@
 Documentation=man:nc(1)
-OnFailure=notification-mail@%n.service
+OnFailure=notification-mail@%n
 
 [Service]
 Type=oneshot
