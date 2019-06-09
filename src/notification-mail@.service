@@ -5,7 +5,7 @@ Documentation=man:mailx(1)
 [Service]
 Type=oneshot
 EnvironmentFile=/etc/port-health-checker/notification-mail.conf
-ExecStart=usr/bin/bash -c '/usr/bin/systemctl status %i | /usr/bin/mailx $OPTIONS -s "[systemd:%i] Failure" ${TO_ADDR}
+ExecStart=/usr/bin/bash -c '/usr/bin/systemctl status %i | /usr/bin/mailx $OPTIONS -s "[systemd:%i] Failure" ${TO_ADDR}'
 
 # Hardening options:
 MemoryDenyWriteExecute=yes
