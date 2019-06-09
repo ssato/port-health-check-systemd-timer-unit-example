@@ -1,9 +1,13 @@
 %global debug_package %{nil}
+%define nginx_80_timer_unit port-health-checker-127.0.0.1@80.timer
+
 %if 0%{?rhel} == 7 || 0%{?epel} == 7
-%define _systemdgeneratordir /usr/lib/systemd/system-generators
+%bcond_with bats
+%else
+%bcond_without bats
 %endif
 
-Summary: A systemd timer unit example of port checker
+Summary: A systemd timer unit examples to check network ports
 Name:    @CPACK_PACKAGE_NAME@
 Version: @CPACK_PACKAGE_VERSION@
 Release: 1%{?dist}
@@ -13,18 +17,23 @@ Source0: %{url}/archive/RELEASE_%{version}.tar.gz
 # TODO:
 #Source0: %%{url}/archive/%%{version}/%%{name}-%%{version}.tar.gz
 %{?systemd_requires}
+# FIXME: cmake looks requiring them regardless of use.
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: cmake
 BuildRequires: systemd
+%if %{with bats}
+BuildRequires: bats
+%endif
 BuildArch:     noarch
 Requires:      nmap-ncat
 Requires:      systemd
 
 %package       80-nginx
-Summary:       A systemd timer unit to monitor HTTP port by nginx
-Requires:      nginx
+Summary:       A systemd timer unit to monitor HTTP port listen by nginx
 Requires:      %{name} = %{version}-%{release}
+Requires:      nginx
+Requires:      systemd
 
 %description
 A RPM package provides an example of systemd timer unit to check health of
@@ -38,38 +47,58 @@ nginx running on localhost.
 %autosetup -n %{name}-%{version}
 
 %build
-%cmake .
-%make_build
+(mkdir -p build && cd build && %cmake ..)
+%make_build -C build
 
 %install
-%make_install
+%make_install -C build
 
 # FIXME:
 (cd %{buildroot}/ && mv usr/etc/ ./)
 
+# Generate units to check the port of nginx (127.0.0.1@80).
+%{buildroot}%{_libexecdir}/%{name}/port-health-checker-units-generator.sh \
+    -o %{buildroot}%{_unitdir} \
+    -s %{buildroot}%{_datadir}/%{name}/port-health-checker-.service.in \
+    %{buildroot}/etc/%{name}/nginx*.conf
+
+%check
+%if %{with bats}
+./build/tests/generate.bats
+%endif
+
 %post
-#%systemd_post port-health-checker@.timer
-#systemctl start port-health-checker@.timer
+%systemd_post notification-mail@.service
 
 %preun
-#%systemd_preun port-health-checker@.timer
+%systemd_preun notification-mail@.service
 
 %postun
-#%systemd_postun_with_restart port-health-checker@.timer
+%systemd_postun_with_restart notification-mail@.service
+
+%post          80-nginx
+%systemd_post %{nginx_80_timer_unit}
+systemctl start %{nginx_80_timer_unit}
+
+%preun         80-nginx
+%systemd_preun %{nginx_80_timer_unit}
+
+%postun        80-nginx
+%systemd_postun_with_restart %{nginx_80_timer_unit}
 
 %files
 %doc README.rst
 %license LICENSE.MIT
-%{_unitdir}/*@.*
-%{_systemdgeneratordir}/*
 %config /etc/%{name}/00_example.conf
-%{_mandir}/man*/*
+%config /etc/%{name}/notification-mail.conf
+%{_unitdir}/notification-mail@.service
+%{_libexecdir}/%{name}/*
+%{_datadir}/%{name}/*
 
 %files         80-nginx
-%doc README.rst
-%license LICENSE.MIT
-%config /etc/%{name}/80.conf
+%config /etc/%{name}/nginx*.conf
+%{_unitdir}/*@80.*
 
 %changelog
-* Fri May 31 2019 Satoru SATOH <ssato@redhat.com> - 0.0.1-1
+* Mon Jun 10 2019 Satoru SATOH <ssato@redhat.com> - 0.1.0-1
 - Initial build.
