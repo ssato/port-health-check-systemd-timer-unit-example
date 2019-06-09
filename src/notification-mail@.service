@@ -1,0 +1,19 @@
+[Unit]
+Description=Send notification mail from systemd unit %n
+Documentation=man:mailx(1)
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/port-health-checker/notification-mail.conf
+ExecStart=usr/bin/bash -c '/usr/bin/systemctl status %i | /usr/bin/mailx $OPTIONS -s "[systemd:%i] Failure" ${TO_ADDR}
+
+# Hardening options:
+MemoryDenyWriteExecute=yes
+PrivateDevices=true
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_INET6
+# .. note:: These are not available in RHEL 7.
+#PrivateMounts=true
+#RestrictRealtime=yes
+#RestrictSUIDSGID=yes
+#ProtectControlGroups=true
