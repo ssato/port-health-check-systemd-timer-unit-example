@@ -1,0 +1,22 @@
+[Unit]
+Description=Check connectivity to the network port @PORT@ on @ADDR@
+Documentation=man:nc(1)
+
+[Service]
+Type=oneshot
+#EnvironmentFile=/etc/port-health-checker/%i.conf
+ExecStart=/usr/bin/nc --nodns -z $OPTIONS @ADDR@ @PORT@
+OnFailure=notification-mail@%n.service
+WANTS=nginx.service
+AFTER=nginx.service
+
+# Hardening options:
+MemoryDenyWriteExecute=yes
+PrivateDevices=true
+PrivateTmp=true
+RestrictAddressFamilies=AF_INET AF_INET6
+# .. note:: These are not available in RHEL =< 8.
+#PrivateMounts=true
+#RestrictRealtime=yes
+#RestrictSUIDSGID=yes
+#ProtectControlGroups=true
